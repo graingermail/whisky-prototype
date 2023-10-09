@@ -32,7 +32,7 @@ function App() {
   return (
     <>
       <div>
-        <h3>Select Flavours</h3>
+        <h3>Select Flavours....</h3>
         <ul>
           {Flavours.map(({ name, id }, index) => {
             return (
