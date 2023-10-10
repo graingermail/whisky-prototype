@@ -1,72 +1,112 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import Data from "./Data";
-import Flavours from "./Flavours";
+import Categories from "./Categories";
 
-function App() {
-  const [whiskies, setwhiskies] = useState(Data);
+// A custom component that renders a table row for each product
+const ProductRow = ({ product }) => {
+  return (
+    <tr>
+      <td>{product.id}</td>
+      <td>{product.name}</td>
+      <td>{product.categories.map((c) => c.name).join(", ")}</td>
+    </tr>
+  );
+};
 
-  const filterNames = (e) => {
-    const search = e.target.value.toLowerCase();
-    const filteredNames = Data.filter((names) =>
-      names.name.toLowerCase().includes(search)
-    );
-    setwhiskies(filteredNames);
+// A custom component that renders a checkbox for each category
+const CategoryCheckbox = ({ category, checked, onChange }) => {
+  return (
+    <div className="checkbox-wrapper">
+      <label>
+        <input
+          type="checkbox"
+          value={category.id}
+          checked={checked}
+          onChange={onChange}
+        />
+        <span>{category.name}</span>
+      </label>
+    </div>
+  );
+};
+
+// The main component that renders the search box, the check boxes and the results table
+const SearchBar = () => {
+  // A state variable that stores the search input value
+  const [search, setSearch] = useState("");
+
+  // A state variable that stores the checked categories as an array of ids
+  const [checkedCategories, setCheckedCategories] = useState([]);
+
+  // A function that handles the change of the search input
+  const handleChange = (e) => {
+    setSearch(e.target.value);
   };
 
-  //state for flavours
-  const [flavours, setFlavours] = useState([]);
+  // A function that handles the change of the check boxes
+  const handleCheck = (e) => {
+    const value = parseInt(e.target.value); // get the category id from the value attribute
+    const checked = e.target.checked; // get the checked status from the checked attribute
+    if (checked) {
+      // if the check box is checked, add the category id to the state array
+      setCheckedCategories([...checkedCategories, value]);
+    } else {
+      // if the check box is unchecked, remove the category id from the state array
+      setCheckedCategories(checkedCategories.filter((id) => id !== value));
+    }
+  };
 
-  //flavours check boxes
-  const [checkedState, setCheckedState] = useState(
-    new Array(Flavours.length).fill(false)
-  );
-
-  const handleOnChange = (position) => {
-    //tick the box
-    const updatedCheckedState = checkedState.map((item, index) =>
-      index === position ? !item : item
-    );
-    setCheckedState(updatedCheckedState);
+  // A function that filters the data array based on the search input value and the checked categories
+  const filterData = () => {
+    return Data.filter((product) => {
+      // check if the product name matches the search input value
+      const matchName = product.name
+        .toLowerCase()
+        .includes(search.toLowerCase());
+      // check if the product categories include any of the checked categories
+      const matchCategories = product.categories.some((c) =>
+        checkedCategories.includes(c.id)
+      );
+      // return true if both conditions are met, or if there are no checked categories
+      return matchName && (matchCategories || checkedCategories.length === 0);
+    });
   };
 
   return (
-    <>
-      <div>
-        <h3>Select Flavours</h3>
-        <ul>
-          {Flavours.map(({ name, id }, index) => {
-            return (
-              <li key={index}>
-                <div>
-                  <div>
-                    <input
-                      type="checkbox"
-                      id={`custom-checkbox-${index}`}
-                      name={name}
-                      value={id}
-                      checked={checkedState[index]}
-                      onChange={() => handleOnChange(index)}
-                    />
-                    {name}
-                  </div>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+    <div className="container">
+      <h1>Search Bar</h1>
+      <input
+        type="text"
+        placeholder="Search by name..."
+        value={search}
+        onChange={handleChange}
+      />
+      <div className="checkbox-container">
+        {Categories.map((category) => (
+          <CategoryCheckbox
+            key={category.id}
+            category={category}
+            checked={checkedCategories.includes(category.id)}
+            onChange={handleCheck}
+          />
+        ))}
       </div>
-
-      <h2>Whisky</h2>
-
-      <input type="text" onChange={(e) => filterNames(e)} />
-      <button>Search</button>
-      <ul>
-        {whiskies.map((whisky) => {
-          return <li key={whisky.id}>{whisky.name}</li>;
-        })}
-      </ul>
-    </>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Categories</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filterData().map((product) => (
+            <ProductRow key={product.id} product={product} />
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
-}
+};
 
-export default App;
+export default SearchBar;

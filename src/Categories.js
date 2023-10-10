@@ -1,4 +1,5 @@
-const Flavours = [
+// The categories array that contains the filter options
+const Categories = [
   { name: "Floral", id: 128 },
   { name: "Fruity", id: 129 },
   { name: "Vanilla", id: 130 },
@@ -11,4 +12,4 @@ const Flavours = [
   { name: "Chocoltey", id: 137 },
 ];
 
-export default Flavours;
+export default Categories;
