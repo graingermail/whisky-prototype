@@ -63,9 +63,9 @@ const SearchBar = () => {
       const matchName = product.name
         .toLowerCase()
         .includes(search.toLowerCase());
-      // check if the product categories include any of the checked categories
-      const matchCategories = product.categories.some((c) =>
-        checkedCategories.includes(c.id)
+      // check if the product categories include all of the checked categories
+      const matchCategories = checkedCategories.every((id) =>
+        product.categories.some((c) => c.id === id)
       );
       // return true if both conditions are met, or if there are no checked categories
       return matchName && (matchCategories || checkedCategories.length === 0);
