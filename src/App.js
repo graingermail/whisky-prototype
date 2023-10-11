@@ -100,9 +100,15 @@ const SearchBar = () => {
           </tr>
         </thead>
         <tbody>
-          {filterData().map((product) => (
-            <ProductRow key={product.id} product={product} />
-          ))}
+          {filterData().length > 0 ? (
+            filterData().map((product) => (
+              <ProductRow key={product.id} product={product} />
+            ))
+          ) : (
+            <tr>
+              <td colSpan="3">None Found</td>
+            </tr>
+          )}
         </tbody>
       </table>
     </div>
